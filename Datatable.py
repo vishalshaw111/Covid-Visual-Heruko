@@ -20,7 +20,8 @@ print (dff[:5])
 app.layout = html.Div([
     html.Div([
         html.H1("CORONA CASES AND DEATH REPORT")
-    ]),
+        html.Img(src="/assets/corona.png")
+    ],className="banner"),
     html.Div([
         dash_table.DataTable(
             id='datatable_id',
