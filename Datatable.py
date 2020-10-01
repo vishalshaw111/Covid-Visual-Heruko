@@ -10,13 +10,11 @@ from dash.dependencies import Input, Output
 app = dash.Dash(__name__)
 server = app.server
 
-#---------------------------------------------------------------
-#Taken from https://www.ecdc.europa.eu/en/geographical-distribution-2019-ncov-cases
+
 df = pd.read_csv("COVID-19-geographic-disbtribution-worldwide-2020-03-29.csv")
 
 dff = df.groupby('countriesAndTerritories', as_index=False)[['deaths','cases']].sum()
-print (dff[:5])
-#---------------------------------------------------------------
+
 app.layout = html.Div([
     html.Div([
         html.H1("CORONA CASES AND DEATH REPORT")
@@ -24,20 +22,20 @@ app.layout = html.Div([
     html.Div([
         dash_table.DataTable(
             id='datatable_id',
-            data=dff.to_dict('records'),
+            data=dff.to_dict('records'), # the contents of the table
             columns=[
                 {"name": i, "id": i, "deletable": False, "selectable": False} for i in dff.columns
             ],
-            editable=False,
-            filter_action="native",
-            sort_action="native",
-            sort_mode="multi",
-            row_selectable="multi",
-            row_deletable=False,
-            selected_rows=[],
-            page_action="native",
-            page_current= 0,
-            page_size= 6,
+            editable=False,         # allow editing of data inside all cells
+            filter_action="native", # allow filtering of data by user ('native') or not ('none')
+            sort_action="native",   # enables data to be sorted per-column by user or not ('none')
+            sort_mode="multi",      # sort across 'multi' or 'single' columns
+            row_selectable="multi", # allow users to select 'multi' or 'single' rows
+            row_deletable=False,    # choose if user can delete a row (True) or not (False)
+            selected_rows=[],       # indices of rows that user selects
+            page_action="native",   # all data is passed to the table up-front or not ('none')
+            page_current=0,         # page number that user is on
+            page_size=6,            # number of rows visible per page
             # page_action='none',
             # style_cell={
             # 'whiteSpace': 'normal'
@@ -96,7 +94,6 @@ app.layout = html.Div([
 
 ])
 
-#------------------------------------------------------------------
 @app.callback(
     [Output('piechart', 'figure'),
      Output('linechart', 'figure')],
@@ -108,7 +105,6 @@ def update_data(chosen_rows,piedropval,linedropval):
     if len(chosen_rows)==0:
         df_filterd = dff[dff['countriesAndTerritories'].isin(['China','Iran','Spain','Italy'])]
     else:
-        print(chosen_rows)
         df_filterd = dff[dff.index.isin(chosen_rows)]
 
     pie_chart=px.pie(
